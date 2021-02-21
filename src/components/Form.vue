@@ -43,7 +43,10 @@ export default {
   methods: {
     onSubmit() {
       this.$refs.addItemForm.validate((valid) => {
-        console.log(valid);
+        if (valid) {
+          this.$emit('submitForm', {...this.formData});
+          this.$refs.addItemForm.resetFields();
+        }
       });
     }
   }
