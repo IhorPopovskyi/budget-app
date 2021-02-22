@@ -1,48 +1,53 @@
 <template>
   <div id="app">
-    <Form @submitForm='onFormSubmit'/>
-    <TotalBalance :total='totalBalance'/>
-    <BudgetList :list='list' @deleteItem='onDeleteItem'/>
+    <DialogConfirm
+        :dialogVis="dialogVis"
+        @closeDialog="showDialog"
+        @deleteItem="deleteIt"
+    />
+
+    <Form @submitForm="onFormSubmit"/>
+    <TotalBalance :list="list"/>
+    <BudgetList :list="list" @deleteItem="onDeleteItem"/>
   </div>
 </template>
 
 <script>
-import BudgetList from '@/components/BudgetList';
-import TotalBalance from '@/components/TotalBalance';
-import Form from '@/components/Form';
+import BudgetList from "@/components/BudgetList";
+import TotalBalance from "@/components/TotalBalance";
+import Form from "@/components/Form";
+import DialogConfirm from "@/components/DialogConfirm";
 
 export default {
-  name: 'App',
+  name: "app",
   components: {
     BudgetList,
     TotalBalance,
-    Form
+    Form,
+    DialogConfirm,
   },
   data: () => ({
     list: {
       1: {
-        type: 'INCOME',
+        type: "INCOME",
         value: 100,
-        comment: 'Some comment',
+        comment: "Some comment",
         id: 1,
       },
       2: {
-        type: 'OUTCOME',
-        value: -50,
-        comment: 'Some outcome comment',
+        type: "OUTCOME",
+        value: 50,
+        comment: "Some outcome comment",
         id: 2,
       },
-    }
+    },
+    dialogVis: {type: false, listItemDel: Number},
   }),
-  computed: {
-    totalBalance() {
-      return Object.values(this.list).reduce(
-          (acc, item) => acc + item.value, 0)
-    }
-  },
+  computed: {},
   methods: {
     onDeleteItem(id) {
-      this.$delete(this.list, id);
+      this.showDialog();
+      this.dialogVis.listItemDel = this.list[id];
     },
     onFormSubmit(data) {
       const newObj = {
@@ -50,14 +55,21 @@ export default {
         id: String(Math.random()),
       };
       this.$set(this.list, newObj.id, newObj);
-    }
-  }
-}
+    },
+    showDialog() {
+      this.dialogVis.type = !this.dialogVis.type;
+    },
+    deleteIt(id) {
+      this.$delete(this.list, id.id);
+      this.showDialog();
+    },
+  },
+};
 </script>
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
